@@ -11,20 +11,10 @@ Create a worker module:
 
 ```elixir
 defmodule App.HardWorker do
-  use GenServer.Behaviour
+  use PoolboyQueue.Worker
 
-  def start_link(state) do
-    :gen_server.start_link(__MODULE__, state, [])
-  end
-
-  def init(state) do
-    {:ok, state}
-  end
-
-  def handle_cast({:worker_arg1, num}, state) do
+  def perform(results_pid) do
     IO.puts "Working on #{num}."
-    # Do some work here
-    {:noreply, state}
   end
 end
 ```
@@ -94,9 +84,23 @@ Although our pool contains only one worker, we've enqueued two jobs. Poolboy Que
 
 ## Why
 
-Poolboy is great at telling you when you've run out of available workers, but it doesn't allow you to "schedule for later" in the case that the pool has dried up. You'll need to wait for an available worker.
+Poolboy is great at telling you when you've run out of available workers, but it doesn't allow you to "schedule for later" in the case that the pool is full. You'll need to wait for an available worker.
 
-It's useful to just queue up a job without having to worry about the availability of workers. When a worker becomes available, schedule the next job in the queue.
+Poolboy handles full pools in two ways. By default, it will block the current process and wait for an available worker, failing after a timeout:
+
+```elixir
+worker = :poolboy.checkout(:hard_workers)
+# Timeout, loosing worker
+```
+
+Or, Poolboy can return immediately telling you the pool is full:
+
+```elixir
+worker = :poolboy.checkout(:hard_workers, false)
+#=> :full
+```
+
+Somtimes it's useful to just queue up a series of jobs without having to worry about the availability of workers. When a worker becomes available, schedule the next job in the queue.
 
 
 # TODO

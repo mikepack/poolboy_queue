@@ -1,27 +1,6 @@
 defmodule PoolboyQueue do
   use GenServer.Behaviour
 
-  # GenServer API
-  def start_link do
-    :gen_server.start_link(__MODULE__, [], [])
-  end
-
-  def init(state) do
-    {:ok, state}
-  end
-
-  def handle_cast({:push, args}, stack) do
-    {:noreply, [args|stack]}
-  end
-
-  def handle_cast(:work, stack) do
-    watcher_pid = spawn fn ->
-      PoolboyQueue.Watcher.watch
-    end
-    flush(stack, watcher_pid)
-    {:noreply, stack}
-  end
-
   # Public API
   def work(queue_pid) do
     :gen_server.cast(queue_pid, :work)
@@ -29,6 +8,34 @@ defmodule PoolboyQueue do
 
   def enqueue(queue_pid, args) do
     :gen_server.cast(queue_pid, {:push, args})
+  end
+
+  # GenServer API
+  def start_link do
+    :gen_server.start_link(__MODULE__, {[], false}, [])
+  end
+
+  def init(state) do
+    {:ok, state}
+  end
+
+  def handle_cast({:push, args}, {stack, started}) do
+    stack = [args|stack]
+
+    if started do
+      :gen_server.cast(self, :work)
+    end
+
+    {:noreply, {stack, started}}
+  end
+
+  def handle_cast(:work, {stack, started}) do
+    watcher_pid = spawn fn ->
+      PoolboyQueue.Watcher.watch
+    end
+    flush(stack, watcher_pid)
+
+    {:noreply, {[], true}}
   end
 
   defp flush([], _) do
