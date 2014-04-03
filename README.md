@@ -89,10 +89,11 @@ Somtimes it's useful to just queue up a series of jobs without having to worry a
 
 # TODO
 
-- Support argument-less workers
 - Remove timers from tests
 - Inline docs
 - Support numerous queues
+- Remove perform placeholders from PoolboyQueue.Worker
+- Unit tests around worker exceptions
 
 
 ## Caveats

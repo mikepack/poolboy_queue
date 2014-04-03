@@ -1,4 +1,4 @@
-defmodule PoolboyQueueTest.Supervisor do
+defmodule PoolboyQueueTest.ResultWorkers do
   use PoolboyQueue.Queue
 
   def name, do: :results

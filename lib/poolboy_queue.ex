@@ -6,7 +6,7 @@ defmodule PoolboyQueue do
     :gen_server.cast(queue_pid, :work)
   end
 
-  def enqueue(queue_pid, args) do
+  def enqueue(queue_pid, args \\ nil) do
     :gen_server.cast(queue_pid, {:push, args})
   end
 

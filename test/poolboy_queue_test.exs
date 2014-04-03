@@ -37,4 +37,15 @@ defmodule PoolboyQueueTest do
 
     assert PoolboyQueueTest.Helpers.finished(meta[:results_pid]) == 2
   end
+
+  test "argument-less jobs can be added to the queue" do
+    Process.register(self, :test_runner)
+
+    {:ok, queue} = PoolboyQueue.start_link(:argumentless)
+
+    PoolboyQueue.work(queue)
+    PoolboyQueue.enqueue(queue)
+
+    assert_receive :done
+  end
 end
