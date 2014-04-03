@@ -16,16 +16,6 @@ defmodule PoolboyQueue.Worker do
         send watcher_pid, {:done, self}
         {:noreply, state}
       end
-
-      def perform do
-        raise "Please define a perform/0 method in your worker."
-      end      
-
-      def perform(_) do
-        raise "Please define a perform/1 method in your worker."
-      end
-
-      defoverridable [perform: 0, perform: 1]
     end
   end
 end

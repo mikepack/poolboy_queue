@@ -3,16 +3,15 @@ defmodule PoolboyQueueTest do
 
   setup do
     results_pid = PoolboyQueueTest.Helpers.setup_queue
-    { :ok, results_pid: results_pid }
+    { :ok, queue } = PoolboyQueue.start_link(:results)
+    { :ok, results_pid: results_pid, queue: queue }
   end
 
   test "it runs jobs", meta do
-    {:ok, queue} = PoolboyQueue.start_link
+    PoolboyQueue.enqueue(meta[:queue], meta[:results_pid])
+    PoolboyQueue.enqueue(meta[:queue], meta[:results_pid])
 
-    PoolboyQueue.enqueue(queue, meta[:results_pid])
-    PoolboyQueue.enqueue(queue, meta[:results_pid])
-
-    PoolboyQueue.work(queue)
+    PoolboyQueue.work(meta[:queue])
 
     :timer.sleep 5
 
@@ -20,9 +19,7 @@ defmodule PoolboyQueueTest do
   end
 
   test "it doesn't run jobs until told", meta do
-    {:ok, queue} = PoolboyQueue.start_link
-
-    PoolboyQueue.enqueue(queue, meta[:results_pid])
+    PoolboyQueue.enqueue(meta[:queue], meta[:results_pid])
 
     :timer.sleep 5
 
@@ -30,13 +27,11 @@ defmodule PoolboyQueueTest do
   end
 
   test "jobs can continue to be added", meta do
-    {:ok, queue} = PoolboyQueue.start_link
+    PoolboyQueue.enqueue(meta[:queue], meta[:results_pid])
 
-    PoolboyQueue.enqueue(queue, meta[:results_pid])
+    PoolboyQueue.work(meta[:queue])
 
-    PoolboyQueue.work(queue)
-
-    PoolboyQueue.enqueue(queue, meta[:results_pid])
+    PoolboyQueue.enqueue(meta[:queue], meta[:results_pid])
 
     :timer.sleep 5
 

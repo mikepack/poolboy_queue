@@ -11,46 +11,46 @@ defmodule PoolboyQueue do
   end
 
   # GenServer API
-  def start_link do
-    :gen_server.start_link(__MODULE__, {[], false}, [])
+  def start_link(name) do
+    :gen_server.start_link(__MODULE__, {name, [], false}, [])
   end
 
   def init(state) do
     {:ok, state}
   end
 
-  def handle_cast({:push, args}, {stack, started}) do
+  def handle_cast({:push, args}, {name, stack, started}) do
     stack = [args|stack]
 
     if started do
       :gen_server.cast(self, :work)
     end
 
-    {:noreply, {stack, started}}
+    {:noreply, {name, stack, started}}
   end
 
-  def handle_cast(:work, {stack, started}) do
+  def handle_cast(:work, {name, stack, started}) do
     watcher_pid = spawn fn ->
-      PoolboyQueue.Watcher.watch
+      PoolboyQueue.Watcher.watch(name)
     end
-    flush(stack, watcher_pid)
+    flush(name, stack, watcher_pid)
 
-    {:noreply, {[], true}}
+    {:noreply, {name, [], true}}
   end
 
-  defp flush([], _) do
+  defp flush(_, [], _) do
   end
 
-  defp flush([args|stack], watcher_pid) do
-    case :poolboy.status(:hard_workers) do
+  defp flush(name, [args|stack], watcher_pid) do
+    case :poolboy.status(name) do
       {:ready, _, _, _} ->
-        worker = :poolboy.checkout(:hard_workers)
+        worker = :poolboy.checkout(name)
         :gen_server.cast(worker, {:work, watcher_pid, args})
 
-        flush(stack, watcher_pid)
+        flush(name, stack, watcher_pid)
 
       {:full, _, _, _} ->
-        flush([args|stack], watcher_pid)
+        flush(name, [args|stack], watcher_pid)
     end
   end
 end

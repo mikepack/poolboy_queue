@@ -23,30 +23,14 @@ Create your pool of workers (named `:hard_workers`) as you would normally with P
 
 ```elixir
 defmodule App.PoolboySupervisor do
-  use Supervisor.Behaviour
+  use PoolboyQueue.Queue
 
-  def start_link do
-    :supervisor.start_link(__MODULE__, [])
-  end
-
-  def init([]) do
-    pool_options = [
-      name: {:local, :hard_workers},
-      worker_module: App.HardWorker,
-      size: 1,
-      max_overflow: 0
-    ]
-
-    children = [
-      :poolboy.child_spec(:hard_workers, pool_options, [])
-    ]
-
-    supervise(children, strategy: :one_for_one)
-  end
+  def name, do: :hard_workers
+  def worker_module, do: App.HardWorker
 end
 ```
 
-Notice we set the pool `size` to 1 and the `max_overflow` to 0, effectively giving us a single worker process.
+<!-- Notice we set the pool `size` to 1 and the `max_overflow` to 0, effectively giving us a single worker process. -->
 
 <!-- 
 You'll likely want your application to supervise your `PoolboySupervisor`, so add it to your **mix.exs** file:
@@ -62,7 +46,7 @@ end
 Create a queue for this pool and push two jobs into it:
 
 ```elixir
-{:ok, queue} = PoolboyQueue.start_link
+{:ok, queue} = PoolboyQueue.start_link(:hard_workers)
 
 PoolboyQueue.enqueue(queue, { :worker_arg1, 123 })
 PoolboyQueue.enqueue(queue, { :worker_arg1, 456 })

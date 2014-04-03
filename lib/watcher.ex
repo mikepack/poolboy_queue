@@ -1,9 +1,9 @@
 defmodule PoolboyQueue.Watcher do
-  def watch do
+  def watch(name) do
     receive do
       {:done, worker} ->
-        :poolboy.checkin(:hard_workers, worker)
+        :poolboy.checkin(name, worker)
     end
-    watch
+    watch(name)
   end
 end
