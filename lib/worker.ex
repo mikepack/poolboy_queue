@@ -2,7 +2,7 @@ defmodule PoolboyQueue.Worker do
   use GenServer.Behaviour
 
   defmacro __using__(_) do
-    quote location: keep do
+    quote do
       def start_link(state) do
         :gen_server.start_link(__MODULE__, state, [])
       end
