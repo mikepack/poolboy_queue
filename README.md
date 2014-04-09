@@ -1,8 +1,6 @@
-# Poolboy Queue
+# Poolboy Queue [![Build Status](https://travis-ci.org/mikepack/poolboy_queue.svg)](https://travis-ci.org/mikepack/poolboy_queue)
 
-## A scrawny queue for Poolboy
-
-[![Build Status](https://travis-ci.org/mikepack/poolboy_queue.svg)](https://travis-ci.org/mikepack/poolboy_queue)
+### A scrawny queue for Poolboy
 
 Poolboy Queue allows you to enqueue jobs to be run in [Poolboy](https://github.com/devinus/poolboy) workers. You may disregard pool overflows and just start working.
 
