@@ -23,10 +23,8 @@ Create your pool of workers (named `:hard_workers`) as you would normally with P
 
 ```elixir
 defmodule App.PoolboySupervisor do
-  use PoolboyQueue.Queue
-
-  def name, do: :hard_workers
-  def worker_module, do: App.HardWorker
+  use PoolboyQueue.Queue, name: :hard_workers,
+                          worker: App.HardWorker
 end
 ```
 
@@ -91,9 +89,9 @@ Somtimes it's useful to just queue up a series of jobs without having to worry a
 
 - Remove timers from tests
 - Inline docs
-- Support numerous queues
 - Remove perform placeholders from PoolboyQueue.Worker
 - Unit tests around worker exceptions
+- Unit tests around PoolboyQueue.Queue options
 
 
 ## Caveats
