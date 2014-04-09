@@ -1,4 +1,6 @@
-# Poolboy Queue - A scrawny queue for Poolboy
+# Poolboy Queue
+
+## A scrawny queue for Poolboy
 
 [![Build Status](https://travis-ci.org/mikepack/poolboy_queue.svg)](https://travis-ci.org/mikepack/poolboy_queue)
 
@@ -88,10 +90,12 @@ Somtimes it's useful to just queue up a series of jobs without having to worry a
 # TODO
 
 - Remove timers from tests
-- Inline docs
 - Remove perform placeholders from PoolboyQueue.Worker
 - Unit tests around worker exceptions
 - Unit tests around PoolboyQueue.Queue options
+- Unit test enqueuing jobs for a queue has not been started
+- Add a function to stop a queue from working
+- Add queue size options to PoolboyQueue.Queue
 
 
 ## Caveats
